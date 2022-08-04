@@ -74,10 +74,10 @@ class TaskController extends Controller
      * @param Task $task
      * @return Response
      */
-    public function destroy(Request $request, Task $task)
-    {
-        // $this->authorize('destroy',$task);
-        $task->delete();
-        return redirect('/tasks');
-    }
-}
+//     public function destroy(Request $request, Task $task)
+//     {
+//         // $this->authorize('destroy',$task);
+//         $task->delete();
+//         return redirect('/tasks');
+//     }
+// }

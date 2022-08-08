@@ -106,3 +106,10 @@ heroku apps
 //マイグレーション
 heroku run --app [プロジェクト名] php artisan migrate
 heroku run --app lara-todo1 php artisan migrate
+
+
+web.phpに下記のコード記載
+//heroku上の通信をhttp->httpsに変更する
+if (App::environment('production') || App::environment('staging')) {
+    URL::forceScheme('https');
+}

@@ -1,0 +1,108 @@
+プロジェクト　作成コマンド
+composer create-project laravel/laravel lara_todo
+
+簡易サーバー起動
+php artisan serve
+終了コマンド
+control + c 
+タイムゾーン設定
+config/app.phpのタイムゾーン設定を 'Asia/Tokyo' に変更
+言語設定
+config/app.phpの 'locale' を 'ja' に変更
+デバッグバー追加
+composer require barryvdh/laravel-debugbar
+デバッグバー非表示にするには
+.envファイルの APP_DEBUG=true => APP_DEBUG=false にする
+データベースの接続確認
+MANP->phpMyAdmin
+データベース名->新規作成->プロジェクト作成
+.envファイルのデータベース名を作成したプロジェクト名に変更
+マイグレーションを実行してデータベースのテーブルを作成する
+php artisan make:migration create_tasks_table --create=tasks
+database/migrationsの中に作成日時のファイルが作成される
+作成ファイルのupメソッドの中身を更新する
+    タスクのID
+    $table->increments('id');
+    ユーザーのテーブルと紐づくユーザーID
+    ユーザーIDはログイン機能を実装した時に使用する
+    $table->integer('user_id')->unsigned()->index();
+    タスクの名前作成
+    $table->string('name');
+    更新日時
+    $table->timestamps();
+マイグレーションファイルを編集してModelsフォルダの User.phpとTask.phpの紐付けができる
+
+マイグレーションコマンドを実行
+php artisan migrate
+データベースにtasksテーブルが追加される
+上記で入力したマイグレーションファイルの通りのカラムが作成される
+
+データベースを操作するModelsファイルを作成する
+(基本的にデータベースのテーブルと対応するモデルを用意する。
+これによりデータ操作を行う対象のテーブルの指定をできるようになる。)
+php artisan make:model Task
+データを修正するときなどはTaskモデルのコードを編集する
+
+コントローラーを作成
+(コントローラーとは入力に応じてモデルを呼び出し取得したデータを
+ビューに渡すなどプログラム全体を連携するような処理を行う)
+php artisan make:controller TaskController
+Http/controllerフォルダに先ほど指定したファイルが作成される
+タスクコントローラーはタスクモデルを使用するのでタスクモデルを使用できるようにするコードを追加する
+use App\Models\Task;
+
+public function index(Request $request)
+    {
+        $tasks = Task::orderBy('created_at', 'asc')->get();
+            (Task::getメソッドというコードでデータベースからタスク一覧の取得を行なっている
+            orderByで並び替えの指定をしている。他にも取得条件など指定するためにさまざまなメソッドを連結することができる)
+        return view('tasks.index', [
+            (view関数の引数としてtasks.indexとはTasksフォルダのindexというviewを使用するという意味)
+            'tasks' => $tasks,
+        ]);
+    }
+
+ルーティングを作成
+(ページを結び付ける仕組みであるルーティングを設定していく)
+routes/web.phpで設定
+Route::get('/tasks', [App\Http\Controllers\TaskController::class, 'index'])->name('tasks');
+(tasksというurlと先ほど作ったTaskControllerのindexメソッドを結び付ける)
+
+ビューを作成
+(ラベルのビューはbladeというテンプレートエンジンを採用している
+これはデザインに当たるテンプレートを割り当てて画面を作るものです。
+bladeには構文がありこれを使用することでシンプルに画面を作り上げることができる
+またbladeにはphpのコードを記述することもできる
+resources/viewsフォルダ内にある。)
+
+viewsフォルダにtasksフォルダを作成しindex.blade.phpというファイルを作成する
+またtodoアプリ全体で共通で使用するビューも用意する
+viewsフォルダにlayoutsフォルダを作成しapp.blade.phpというファイルを作成する
+
+共通のビューであるapp.blade.phpにhtmlタグとbladeの構文を記述していく。
+@foreachという構文を使って
+@yieldという構文は画面別のビューを挿入する部分となる
+
+タスク一覧画面のビューであるindex.blade.phpにコードを記述する
+
+//ログイン機能実装
+composer require laravel/ui
+php artisan ui bootstrap --auth
+//noを選択
+npm install
+npm run dev or npm run build
+npm run development
+php artisan make:policy TaskPolicy
+
+
+
+
+herokuデプロイ
+//ログイン
+heroku login
+//herokuで作成しているアプリを表示
+heroku apps
+//マイグレーションファイルのカラムに[->charset("utf8")(制限回避のため)]を追記する
+//マイグレーション
+heroku run --app [プロジェクト名] php artisan migrate
+heroku run --app lara-todo1 php artisan migrate

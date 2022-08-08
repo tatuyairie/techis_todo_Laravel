@@ -71,5 +71,3 @@
     </div>
 </div>
 @endsection
-
-{{-- git remote add origin https://github.com/tatuyairie/techis-todo-laravel.git --}}
